@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+
+# set up code for twitter dataset
+# will return a file cleanData.csv
+
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 from textAnalysis_ex import *
 
-def setUp():
-        #################### SETUP CODE ########################################
+def main():
         # load the dataset
         dataset = '/home/markg/Documents/TCD/ML/ML1819--task-107--team-11/dataset/gender-classifier-DFE-791531.csv'
         data = pd.read_csv(dataset, encoding='latin-1')
@@ -75,5 +79,7 @@ def setUp():
         scaler = preprocessing.StandardScaler()
         data[numericVariables] = scaler.fit_transform(data[numericVariables])
 
-        ##################### END SETUP CODE #####################################
-        return data
+        data.to_csv('cleanData.csv')
+
+if __name__ == '__main__':
+  main()
