@@ -90,7 +90,7 @@ def main():
 
         data['link_hue'] = H
         data['link_sat'] = S
-        data['link_vue'] = V
+        data['link_value'] = V
         data.drop (columns = ['link_color'], inplace = True)
 
         # convert sidebar to hsv
@@ -114,15 +114,15 @@ def main():
 
         data['sidebar_hue'] = H2
         data['sidebar_sat'] = S2
-        data['sidebar_vue'] = V2
+        data['sidebar_value'] = V2
         data.drop (columns = ['sidebar_color'], inplace = True)
 
         ####### OUTLIER CODE #######################
 
         # standardize numeric variables (could also consider using robust scaler here)
         numericVariables = ['fav_number', 'tweet_count','retweet_count', 'totalLettersName',
-         'year', 'month', 'link_hue', 'link_vue', 'link_sat',
-         'sidebar_hue', 'sidebar_sat', 'sidebar_vue']
+         'year', 'month', 'link_hue', 'link_value', 'link_sat',
+         'sidebar_hue', 'sidebar_sat', 'sidebar_value']
 
         scaler = preprocessing.StandardScaler()
         data[numericVariables] = scaler.fit_transform(data[numericVariables])
