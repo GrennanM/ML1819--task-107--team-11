@@ -31,7 +31,7 @@ def main():
         # drop unnecessary columns
         notNeededCols = ['_unit_id', '_golden', '_unit_state', '_trusted_judgments',
          'profileimage','tweet_coord','tweet_id', '_last_judgment_at', 'tweet_created',
-         'gender_gold','profile_yn_gold', 'description']
+         'gender_gold','profile_yn_gold', 'description', 'user_timezone', 'text']
         data.drop(columns=notNeededCols, inplace=True)
 
         # drop entries where profile doesn't exist and column profile_yn
@@ -53,10 +53,6 @@ def main():
         data.tweet_location.where(data.tweet_location.isnull(), 1, inplace=True)
         data.tweet_location.replace(np.NaN, 0, inplace=True)
 
-        # change timezone to 0 if present, 1 if empty
-        data.user_timezone.where(data.user_timezone.isnull(), 1, inplace=True)
-        data.user_timezone.replace(np.NaN, 0, inplace=True)
-
         # change gender to 0=Male, 1=Female
         data['gender_catg']=pd.factorize(data['gender'])[0]
         data.drop (columns = ['gender'], inplace = True)
@@ -67,12 +63,12 @@ def main():
         # data.drop (columns = ['sidebar_color'], inplace = True)
         # data.drop (columns = ['link_color'], inplace = True)
 
-        # analyize text for sentiment & drop text column
-        text_sent=[]
-        for tweet in data['text']:
-          text_sent.append(textAnalysis(tweet))
-        data['text_sent']=text_sent
-        data.drop(columns = ['text'], inplace=True)
+        # # analyize text for sentiment & drop text column
+        # text_sent=[]
+        # for tweet in data['text']:
+        #   text_sent.append(textAnalysis(tweet))
+        # data['text_sent']=text_sent
+        # data.drop(columns = ['text'], inplace=True)
 
         # convert linkColor to hsv
         H, S, V = [], [], []
@@ -120,6 +116,8 @@ def main():
         data['sidebar_sat'] = S2
         data['sidebar_vue'] = V2
         data.drop (columns = ['sidebar_color'], inplace = True)
+
+        ####### OUTLIER CODE #######################
 
         # standardize numeric variables (could also consider using robust scaler here)
         numericVariables = ['fav_number', 'tweet_count','retweet_count', 'totalLettersName',
