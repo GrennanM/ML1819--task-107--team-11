@@ -32,10 +32,10 @@ from sklearn.metrics import r2_score
 
 #Dropping column
     data3 = pd.read_csv('cleanData.csv', na_values = '?',encoding='latin-1')
-    data3= data3.loc[:, ~data3.columns.str.contains('^Unnamed')]
-    data3 = data3.drop(['tweet_location','year','sidebar_hue','link_sat'
-                        ,'totalLettersName','sidebar_vue','sidebar_sat','sidebar_hue'], axis=1)
-    data3 = data3.drop(['link_vue','retweet_count'],axis=1)
+   # data3= data3.loc[:, ~data3.columns.str.contains('^Unnamed')]
+   # data3 = data3.drop(['tweet_location','year','sidebar_hue','link_sat'
+    #                    ,'totalLettersName','sidebar_vue','sidebar_sat','sidebar_hue'], axis=1)
+   # data3 = data3.drop(['link_vue','retweet_count'],axis=1)
     data3 = data3[['tweet_location','retweet_count','link_hue','sidebar_vue','gender_catg']]
     X1 = data3.drop('gender_catg', axis=1)
     y1 = data3['gender_catg']
