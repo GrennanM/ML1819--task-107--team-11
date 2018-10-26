@@ -6,13 +6,11 @@ Created on Fri Oct 26 00:54:03 2018
 @author: vishalrana
 """
 
-import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
-from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_selection import RFECV
 from sklearn.tree import DecisionTreeClassifier
@@ -21,10 +19,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import StratifiedKFold
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.pipeline import Pipeline
-import numpy as np
-import pandas as pd
 from pmlb import fetch_data
-import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import make_scorer 
 from sklearn.model_selection import GridSearchCV
