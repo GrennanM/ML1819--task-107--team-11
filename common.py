@@ -65,6 +65,7 @@ def main():
    'profileimage','tweet_coord','tweet_id', '_last_judgment_at', 'tweet_created',
    'gender_gold','profile_yn_gold', 'description', 'user_timezone','text']
   data.drop(columns=notNeededCols, inplace=True)
+  data= data.loc[:, ~data.columns.str.contains('^Unnamed')]
 
   # drop entries where profile doesn't exist and column profile_yn
   drop_items_idx = data[data['profile_yn'] == 'no'].index
