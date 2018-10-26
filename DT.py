@@ -48,7 +48,6 @@ from sklearn.metrics import r2_score
     g_cv = GridSearchCV(DecisionTreeRegressor(),
               param_grid={'min_samples_split': range(2, 10)},
               scoring=scoring, cv=5, refit=True)
-
     g_cv.fit(X_train1, y_train1)
     y_pred1 = g_cv.predict(X_test1)
     leng = len(y_pred1)
