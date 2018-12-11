@@ -32,6 +32,7 @@ def main():
         notNeededCols = ['_unit_id', '_golden', '_unit_state', '_trusted_judgments',
          'profileimage','tweet_coord','tweet_id', '_last_judgment_at', 'tweet_created',
          'gender_gold','profile_yn_gold', 'description', 'user_timezone', 'text']
+        data= data.loc[:, ~data.columns.str.contains('^Unnamed')]
         data.drop(columns=notNeededCols, inplace=True)
 
         # drop entries where profile doesn't exist and column profile_yn
