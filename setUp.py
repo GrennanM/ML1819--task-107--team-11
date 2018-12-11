@@ -118,6 +118,18 @@ def main():
         data.drop (columns = ['sidebar_color'], inplace = True)
 
         ####### OUTLIER CODE #######################
+        l,u = stndrd_Devtn(data['fav_number'],3)
+        drop_items_idx = data[(data['fav_number'] > u) | (data['fav_number'] < l)].index
+        data.drop (index = drop_items_idx, inplace = True)
+
+        l,u = stndrd_Devtn(data['retweet_count'],3)
+        drop_items_idx = data[(data['retweet_count'] > u) | (data['retweet_count'] < l)].index
+        data.drop (index = drop_items_idx, inplace = True)
+
+        l,u = stndrd_Devtn(data['tweet_count'],3)
+        drop_items_idx = data[(data['tweet_count'] > u) | (data['tweet_count'] < l)].index
+        data.drop (index = drop_items_idx, inplace = True)
+
 
         # standardize numeric variables (could also consider using robust scaler here)
         numericVariables = ['fav_number', 'tweet_count','retweet_count', 'totalLettersName',

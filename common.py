@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 from numpy import mean
 from numpy import std
+import colorsys
+from sklearn import preprocessing
 
 def stndrd_Devtn(column,num):
   data_mean, data_std = mean(column), std(column)
@@ -43,9 +45,10 @@ def gender_to_numeric(a):
 
 def main():
   # load the data
-  data = pd.read_csv('C:/Users/Geet/Downloads/gender-classifier-DFE-791531.csv', encoding='latin-1')
+  dataset = '/home/markg/Documents/TCD/ML/ML1819--task-107--team-11/dataset/gender-classifier-DFE-791531.csv'
+  data = pd.read_csv(dataset, encoding='latin-1')
   data.info()
-  
+
   # reformat date column
   data['created'] = pd.to_datetime(data['created'])
 
@@ -84,11 +87,11 @@ def main():
   # change tweet location to 0 if present, 1 if empty
   data.tweet_location.where(data.tweet_location.isnull(), 1, inplace=True)
   data.tweet_location.replace(np.NaN, 0, inplace=True)
-  
+
   # convert linkColor to hsv
   data['link_hue'],data['link_sat'],data['link_vue'] = colur_hex_to_huv(data['link_color'])
   data.drop(columns = ['link_color'], inplace = True)
-  
+
   # convert sidebar to hsv
   data['sidebar_hue'],data['sidebar_sat'],data['sidebar_vue'] = colur_hex_to_huv(data['sidebar_color'])
   data.drop (columns = ['sidebar_color'], inplace = True)
@@ -97,20 +100,20 @@ def main():
   l,u = stndrd_Devtn(data['fav_number'],3)
   drop_items_idx = data[(data['fav_number'] > u) | (data['fav_number'] < l)].index
   data.drop (index = drop_items_idx, inplace = True)
-  
+
   l,u = stndrd_Devtn(data['retweet_count'],3)
   drop_items_idx = data[(data['retweet_count'] > u) | (data['retweet_count'] < l)].index
   data.drop (index = drop_items_idx, inplace = True)
-  
+
   l,u = stndrd_Devtn(data['tweet_count'],3)
   drop_items_idx = data[(data['tweet_count'] > u) | (data['tweet_count'] < l)].index
   data.drop (index = drop_items_idx, inplace = True)
-  
+
   # change gender to 0=Male, 1=Female
   data['gender_catg'] = data['gender'].apply(gender_to_numeric)
   data.drop (columns = ['gender'], inplace = True)
   data.info()
-  
+
   # standardize numeric variables (could also consider using robust scaler here)
   numericVariables = ['fav_number', 'tweet_count','retweet_count', 'totalLettersName',
    'year', 'month', 'link_hue', 'link_vue', 'link_sat',
@@ -118,8 +121,8 @@ def main():
 
   scaler = preprocessing.StandardScaler()
   data[numericVariables] = scaler.fit_transform(data[numericVariables])
-  
-  data.to_csv('cleanData.csv')
+
+  data.to_csv('cleanData2.csv')
   data.info()
   print (data.head(5))
 
