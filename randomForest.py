@@ -3,19 +3,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import preprocessing, metrics
-from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
-from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold, cross_validate
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.feature_selection import RFECV, RFE
-from sklearn.linear_model import LogisticRegression
-import statsmodels.api as sm
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import roc_curve
-from textAnalysis_ex import *
-from setUp import *
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import StratifiedShuffleSplit
+# from sklearn.metrics import roc_auc_score
+# from sklearn.metrics import roc_curve
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from collections import OrderedDict
@@ -96,32 +87,39 @@ def main():
 
         ######### END Randomized Search ##################
 
-        # build a Random Forest Model using Randomized Search results
-        baseline_model = RandomForestClassifier(n_estimators=1333,
-                        min_samples_split=2, min_samples_leaf=4,
-                        max_features='sqrt', max_depth=1236,
-                        bootstrap=True, random_state=0)
-
-        # fit the training model
-        baseline_model.fit(X_train, y_train)
-
-        # predict validation data set
-        y_pred = baseline_model.predict(X_test)
-        print(classification_report(y_test,y_pred))
+        # # build a Random Forest Model using Randomized Search results
+        # best_randomized_model = RandomForestClassifier(n_estimators=1333,
+        #                 min_samples_split=2, min_samples_leaf=4,
+        #                 max_features='sqrt', max_depth=1236,
+        #                 bootstrap=True, random_state=0)
+        #
+        # # fit the training model
+        # best_randomized_model.fit(X_train, y_train)
+        #
+        # # # cross validation to return metrics
+        # # scores = cross_validate(best_randomized_model, X_test, y_test, cv=5,
+        # #                         scoring=('recall', 'precision', 'f1'))
+        # # print ("Recall: ", scores['test_recall'].mean())
+        # # print ("Precision: ", scores['test_precision'].mean())
+        # # print ("F1: ", scores['test_f1'].mean())
+        #
+        # # # predict validation data set
+        # # y_pred = best_randomized_model.predict(X_test)
+        # # print(classification_report(y_test,y_pred))
         ############### END RANDOMISED SEARCH MODEL ######################
 
         ###############  Grid Search ##########
 
-        # grid returned from random search
+        # # grid returned from random search
         # grid_from_random_search = {{'n_estimators': 1333, 'min_samples_split': 2,
-         # 'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': 1236,
-         # 'bootstrap': True}}
+        #  'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': 1236,
+        #  'bootstrap': True}}
         #
-        # param_grid = {'n_estimators': [],
-        # 'min_samples_split': [8, 9, 10, 11, 12],
-        # 'min_samples_leaf': [1, 2, 3],
-        # 'max_features': [None],
-        # 'max_depth': [30, 40, 45],
+        # param_grid = {'n_estimators': [1000],
+        # 'min_samples_split': [2, 3],
+        # 'min_samples_leaf': [3, 4, 5],
+        # 'max_features': ['sqrt'],
+        # 'max_depth': [1200, 1300],
         # 'bootstrap': [True]}
         #
         # # model
@@ -136,7 +134,20 @@ def main():
         # print (grid_search.best_params_)
         ############### End Grid Search ###############
 
+        # build model with results of grid search
+        best_grid_model = RandomForestClassifier(n_estimators=2000,
+                        min_samples_split=3, min_samples_leaf=3,
+                        max_features='sqrt', max_depth=1200,
+                        bootstrap=True, random_state=0)
 
+        # fit the training model
+        best_grid_model.fit(X_train, y_train)
+
+        # predict validation data set
+        y_pred = best_grid_model.predict(X_test)
+        print(classification_report(y_test,y_pred))
+
+        ################# End grid model ###################
 
 
         # end time
