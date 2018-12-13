@@ -3,10 +3,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import preprocessing, metrics
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold, cross_validate
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.linear_model import LogisticRegression
 # from sklearn.metrics import roc_auc_score
 # from sklearn.metrics import roc_curve
+from sklearn.feature_selection import RFECV, RFE
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from collections import OrderedDict
@@ -19,6 +23,17 @@ def main():
         dataset = '/home/markg/Documents/TCD/ML/ML1819--task-107--team-11/cleanData.csv'
         data = pd.read_csv(dataset, encoding='latin-1')
         data.drop(columns=['Unnamed: 0'], inplace = True)
+
+        # store independent variables for later
+        names = ['fav_number', 'retweet_count','tweet_count',
+        'tweet_location', 'year', 'month', 'totalLettersName', 'link_hue',
+         'link_sat', 'link_vue', 'sidebar_hue', 'sidebar_sat', 'sidebar_vue']
+
+        # create a dictionary of indices and independent variables
+        nameDict = {}
+        for i in range(len(names)):
+            nameDict[i] = names[i]
+
         # data.drop(columns = ['tweet_count', 'month', 'fav_number',
         # 'month', 'totalLettersName', 'link_hue', 'link_vue', 'link_sat', 'sidebar_sat',
         # 'sidebar_vue'], inplace=True)
@@ -133,21 +148,172 @@ def main():
         # grid_search.fit(X_train, y_train)
         # print (grid_search.best_params_)
         ############### End Grid Search ###############
+        #
+        # # build model with results of grid search
+        # best_grid_model = RandomForestClassifier(n_estimators=2000,
+        #                 min_samples_split=3, min_samples_leaf=3,
+        #                 max_features='sqrt', max_depth=1200,
+        #                 bootstrap=True, random_state=0)
+        #
+        # # fit the training model
+        # best_grid_model.fit(X_train, y_train)
+        #
+        # # predict validation data set
+        # y_pred = best_grid_model.predict(X_test)
+        # print(classification_report(y_test,y_pred))
 
-        # build model with results of grid search
-        best_grid_model = RandomForestClassifier(n_estimators=2000,
+        ################# End grid model ###################
+
+    # ################ print OOB vs search criteria #############################
+    #     RANDOM_STATE = 123
+    #
+    #     # NOTE: Setting the `warm_start` construction parameter to `True` disables
+    #     # support for parallelized ensembles but is necessary for tracking the OOB
+    #     # error trajectory during training.
+    #     ensemble_clfs = [
+    #         ("RandomForestClassifier, max_features=2",
+    #             RandomForestClassifier(n_estimators=100,
+    #                                    warm_start=True, max_features=2,
+    #                                    oob_score=True,
+    #                                    random_state=RANDOM_STATE)),
+    #         ("RandomForestClassifier, max_features=3",
+    #             RandomForestClassifier(n_estimators=100,
+    #                                    warm_start=True, max_features=3,
+    #                                    oob_score=True,
+    #                                    random_state=RANDOM_STATE)),
+    #         ("RandomForestClassifier, max_features=4",
+    #             RandomForestClassifier(n_estimators=100,
+    #                                    warm_start=True, max_features=4,
+    #                                    oob_score=True,
+    #                                    random_state=RANDOM_STATE))
+    #     ]
+    #
+    #     # Map a classifier name to a list of (<n_estimators>, <error rate>) pairs.
+    #     error_rate = OrderedDict((label, []) for label, _ in ensemble_clfs)
+    #
+    #     # Range of `n_estimators` values to explore.
+    #     min_estimators = 10
+    #     max_estimators = 1500 # number of trees to try
+    #
+    #     for label, clf in ensemble_clfs:
+    #         for i in range(min_estimators, max_estimators + 1, 20):
+    #             clf.set_params(n_estimators=i)
+    #             clf.fit(X_train, y_train)
+    #
+    #             # Record the OOB error for each `n_estimators=i` setting.
+    #             oob_error = 1 - clf.oob_score_
+    #             error_rate[label].append((i, oob_error))
+    #
+    #     # Generate the "OOB error rate" vs. "n_estimators" plot.
+    #     for label, clf_err in error_rate.items():
+    #         xs, ys = zip(*clf_err)
+    #         plt.plot(xs, ys, label=label)
+    #
+    #     axes = plt.gca()
+    #     axes.set_ylim([0,0.4]) # sets y_axis limit to between 0 and 1
+    #     plt.xlim(min_estimators, max_estimators)
+    #     plt.xlabel("n_estimators")
+    #     plt.ylabel("OOB error rate")
+    #     plt.legend(loc="upper right")
+    #     plt.show()
+    #     ######################## END PLOT ###########################
+
+        # ################### Feature Importance Plot ##################
+        # # Build a forest and compute the feature importances
+        # forest = ExtraTreesClassifier(n_estimators=1000, min_samples_split=3,
+        #                             min_samples_leaf=3, max_features=4,
+        #                             max_depth=1200, bootstrap=True,
+        #                               random_state=0)
+        #
+        # forest.fit(X_train, y_train)
+        # importances = forest.feature_importances_
+        # std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+        #              axis=0)
+        # indices = np.argsort(importances)[::-1]
+        #
+        # # create a list of features in order of importance
+        # important_features = [nameDict[i] for i in indices]
+        #
+        # # Print the feature ranking
+        # print("Feature ranking:")
+        #
+        # for f in range(X.shape[1]):
+        #     print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+        #
+        # print (important_features)
+        #
+        # # Plot the feature importances of the forest
+        # plt.figure()
+        # plt.title("Feature importance Random Forest")
+        # plt.bar(range(X.shape[1]), importances[indices],
+        #        color="r", yerr=std[indices], align="center")
+        # plt.xticks(range(X.shape[1]), important_features, rotation=30)
+        # plt.xlim([-1, X.shape[1]])
+        # plt.ylabel("Relative Importance")
+        # plt.show()
+        ##################### End Feature Importance Plot ######################
+
+        #################### Recursive Feature Selection ######################
+
+        # svm recursive feature selection
+        svm = SVC(C=1, gamma=0.3, kernel='linear')
+        svm_rfe = RFECV(estimator=svm, step=1, cv=StratifiedKFold(3),
+                              scoring='accuracy')
+        svm_rfe.fit(X_train, y_train)
+
+
+        # Random Forest recursive feature selection
+        best_grid_model = RandomForestClassifier(n_estimators=100,
                         min_samples_split=3, min_samples_leaf=3,
                         max_features='sqrt', max_depth=1200,
                         bootstrap=True, random_state=0)
+        rf_rfe = RFECV(estimator=best_grid_model, step=1, cv=StratifiedKFold(3),
+                      scoring='accuracy')
+        rf_rfe.fit(X_train, y_train)
 
-        # fit the training model
-        best_grid_model.fit(X_train, y_train)
+        # Logistic Recursive Feature Selection
+        logistic = LogisticRegression()
+        log_rfe = RFECV(estimator=logistic, step=1, cv=StratifiedKFold(3),
+                      scoring='accuracy')
+        log_rfe.fit(X_train, y_train)
 
-        # predict validation data set
-        y_pred = best_grid_model.predict(X_test)
-        print(classification_report(y_test,y_pred))
+        # Decision tree Feature Selection
+        dt = DecisionTreeClassifier()
+        dt_rfe = RFECV(estimator=dt, step=1, cv=StratifiedKFold(3),
+                      scoring='accuracy')
+        dt_rfe.fit(X_train, y_train)
 
-        ################# End grid model ###################
+        # Plot number of features VS. Accuracy cross-validation scores
+        plt.figure()
+        plt.xlabel("Number of Features Selected")
+        plt.title("Recursive Feature Selection")
+        plt.ylabel("Accuracy 5-Fold Cross validation Score")
+        plt.plot(range(1, len(rf_rfe.grid_scores_) + 1), rf_rfe.grid_scores_,
+        label="Random Forest")
+        plt.plot(range(1, len(svm_rfe.grid_scores_) + 1), svm_rfe.grid_scores_,
+        label="SVM")
+        plt.plot(range(1, len(log_rfe.grid_scores_) + 1), log_rfe.grid_scores_,
+        label="Logistic Regression")
+        plt.plot(range(1, len(dt_rfe.grid_scores_) + 1), dt_rfe.grid_scores_,
+        label="Baseline Decision Tree")
+        plt.axhline(y=0.5, label="Random Classifier", color="#D3D3D3",
+        linestyle="dashed")
+        plt.legend(loc=4)
+        plt.show()
+
+        ################ End Recursive Feature ################################
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         # end time
