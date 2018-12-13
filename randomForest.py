@@ -20,7 +20,7 @@ def main():
         startTime = time.time()
 
         # get data
-        dataset = '/home/markg/Documents/TCD/ML/ML1819--task-107--team-11/cleanData.csv'
+        dataset = '/home/markg/Documents/TCD/ML/ML1819--task-107--team-11/cleanData2.csv'
         data = pd.read_csv(dataset, encoding='latin-1')
         data.drop(columns=['Unnamed: 0'], inplace = True)
 
@@ -33,10 +33,6 @@ def main():
         nameDict = {}
         for i in range(len(names)):
             nameDict[i] = names[i]
-
-        # data.drop(columns = ['tweet_count', 'month', 'fav_number',
-        # 'month', 'totalLettersName', 'link_hue', 'link_vue', 'link_sat', 'sidebar_sat',
-        # 'sidebar_vue'], inplace=True)
 
         # create independent & dependent variables
         X = data.drop('gender_catg', axis=1)
@@ -220,7 +216,7 @@ def main():
 
         # ################### Feature Importance Plot ##################
         # # Build a forest and compute the feature importances
-        # forest = ExtraTreesClassifier(n_estimators=1000, min_samples_split=3,
+        # forest = ExtraTreesClassifier(n_estimators=200, min_samples_split=3,
         #                             min_samples_leaf=3, max_features=4,
         #                             max_depth=1200, bootstrap=True,
         #                               random_state=0)
@@ -234,75 +230,92 @@ def main():
         # # create a list of features in order of importance
         # important_features = [nameDict[i] for i in indices]
         #
-        # # Print the feature ranking
-        # print("Feature ranking:")
-        #
-        # for f in range(X.shape[1]):
-        #     print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
-        #
-        # print (important_features)
-        #
         # # Plot the feature importances of the forest
         # plt.figure()
         # plt.title("Feature importance Random Forest")
         # plt.bar(range(X.shape[1]), importances[indices],
         #        color="r", yerr=std[indices], align="center")
-        # plt.xticks(range(X.shape[1]), important_features, rotation=30)
+        # plt.xticks(range(X.shape[1]), important_features, rotation=60)
         # plt.xlim([-1, X.shape[1]])
         # plt.ylabel("Relative Importance")
         # plt.show()
-        ##################### End Feature Importance Plot ######################
+        # #################### End Feature Importance Plot ######################
 
-        #################### Recursive Feature Selection ######################
+        # #################### Recursive Feature Selection ######################
+        #
+        # # svm recursive feature selection
+        # svm = SVC(C=1, gamma=0.3, kernel='linear')
+        # svm_rfe = RFECV(estimator=svm, step=1, cv=StratifiedKFold(3),
+        #                       scoring='accuracy')
+        # svm_rfe.fit(X_train, y_train)
+        #
+        #
+        # # Random Forest recursive feature selection
+        # best_grid_model = RandomForestClassifier(n_estimators=100,
+        #                 min_samples_split=3, min_samples_leaf=3,
+        #                 max_features='sqrt', max_depth=1200,
+        #                 bootstrap=True, random_state=0)
+        # rf_rfe = RFECV(estimator=best_grid_model, step=1, cv=StratifiedKFold(3),
+        #               scoring='accuracy')
+        # rf_rfe.fit(X_train, y_train)
+        #
+        # # Logistic Recursive Feature Selection
+        # logistic = LogisticRegression()
+        # log_rfe = RFECV(estimator=logistic, step=1, cv=StratifiedKFold(3),
+        #               scoring='accuracy')
+        # log_rfe.fit(X_train, y_train)
+        #
+        # # Decision tree Feature Selection
+        # dt = DecisionTreeClassifier()
+        # dt_rfe = RFECV(estimator=dt, step=1, cv=StratifiedKFold(3),
+        #               scoring='accuracy')
+        # dt_rfe.fit(X_train, y_train)
+        #
+        # # Plot number of features VS. Accuracy cross-validation scores
+        # plt.figure()
+        # plt.xlabel("Number of Features Selected")
+        # plt.title("Recursive Feature Selection")
+        # plt.ylabel("Accuracy 5-Fold Cross validation Score")
+        # plt.plot(range(1, len(rf_rfe.grid_scores_) + 1), rf_rfe.grid_scores_,
+        # label="Random Forest")
+        # plt.plot(range(1, len(svm_rfe.grid_scores_) + 1), svm_rfe.grid_scores_,
+        # label="SVM")
+        # plt.plot(range(1, len(log_rfe.grid_scores_) + 1), log_rfe.grid_scores_,
+        # label="Logistic Regression")
+        # plt.plot(range(1, len(dt_rfe.grid_scores_) + 1), dt_rfe.grid_scores_,
+        # label="Baseline Decision Tree")
+        # plt.axhline(y=0.5, label="Random Classifier", color="#D3D3D3",
+        # linestyle="dashed")
+        # plt.legend(loc=4)
+        # plt.show()
+        #
+        # ################ End Recursive Feature ##############################
 
-        # svm recursive feature selection
-        svm = SVC(C=1, gamma=0.3, kernel='linear')
-        svm_rfe = RFECV(estimator=svm, step=1, cv=StratifiedKFold(3),
-                              scoring='accuracy')
-        svm_rfe.fit(X_train, y_train)
-
-
-        # Random Forest recursive feature selection
-        best_grid_model = RandomForestClassifier(n_estimators=100,
-                        min_samples_split=3, min_samples_leaf=3,
-                        max_features='sqrt', max_depth=1200,
-                        bootstrap=True, random_state=0)
-        rf_rfe = RFECV(estimator=best_grid_model, step=1, cv=StratifiedKFold(3),
-                      scoring='accuracy')
-        rf_rfe.fit(X_train, y_train)
-
-        # Logistic Recursive Feature Selection
-        logistic = LogisticRegression()
-        log_rfe = RFECV(estimator=logistic, step=1, cv=StratifiedKFold(3),
-                      scoring='accuracy')
-        log_rfe.fit(X_train, y_train)
-
-        # Decision tree Feature Selection
-        dt = DecisionTreeClassifier()
-        dt_rfe = RFECV(estimator=dt, step=1, cv=StratifiedKFold(3),
-                      scoring='accuracy')
-        dt_rfe.fit(X_train, y_train)
-
-        # Plot number of features VS. Accuracy cross-validation scores
-        plt.figure()
-        plt.xlabel("Number of Features Selected")
-        plt.title("Recursive Feature Selection")
-        plt.ylabel("Accuracy 5-Fold Cross validation Score")
-        plt.plot(range(1, len(rf_rfe.grid_scores_) + 1), rf_rfe.grid_scores_,
-        label="Random Forest")
-        plt.plot(range(1, len(svm_rfe.grid_scores_) + 1), svm_rfe.grid_scores_,
-        label="SVM")
-        plt.plot(range(1, len(log_rfe.grid_scores_) + 1), log_rfe.grid_scores_,
-        label="Logistic Regression")
-        plt.plot(range(1, len(dt_rfe.grid_scores_) + 1), dt_rfe.grid_scores_,
-        label="Baseline Decision Tree")
-        plt.axhline(y=0.5, label="Random Classifier", color="#D3D3D3",
-        linestyle="dashed")
-        plt.legend(loc=4)
-        plt.show()
-
-        ################ End Recursive Feature ################################
-
+        # #################### Test Model with 8 best features #################
+        #
+        # # create independent & dependent variables without worst features
+        # data.drop(columns = ['retweet_count', 'sidebar_sat', 'tweet_location',
+        # 'sidebar_hue', 'sidebar_vue'], inplace = True)
+        # X = data.drop('gender_catg', axis=1)
+        # y = data['gender_catg']
+        #
+        # # split into 90% training, 10% testing
+        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.10)
+        #
+        # # build model
+        # rf_8features_model = RandomForestClassifier(n_estimators=600,
+        #                 min_samples_split=3, min_samples_leaf=3,
+        #                 max_features='sqrt', max_depth=1200,
+        #                 bootstrap=True, random_state=0)
+        #
+        # # fit the model
+        # rf_8features_model.fit(X_train, y_train)
+        #
+        # # predict validation data set
+        # y_pred = rf_8features_model.predict(X_test)
+        # print(classification_report(y_test,y_pred))
+        #
+        # ################### End Test Model with 8 features ##################
 
 
 
