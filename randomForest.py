@@ -6,10 +6,8 @@ from sklearn import preprocessing, metrics
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold, cross_validate
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.linear_model import LogisticRegression
-# from sklearn.metrics import roc_auc_score
-# from sklearn.metrics import roc_curve
 from sklearn.feature_selection import RFECV, RFE
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
@@ -41,8 +39,17 @@ def main():
         # split into 90% training, 10% testing
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.10)
 
-
-        ############## BASELINE #################################
+        # ############## BASELINE Decision Tree ################################
+        #
+        # # build decision tree
+        # dt = DecisionTreeClassifier()
+        # dt_fit = dt.fit(X_train, y_train)
+        #
+        # # predict test data set
+        # y_pred = dt.predict(X_test)
+        # print(classification_report(y_test,y_pred))
+        #
+        # ############## BASELINE Random Forest #################################
 
         # # build a Random Forest Model
         # baseline_model = RandomForestClassifier(n_estimators=1500, max_depth=None,
@@ -249,7 +256,6 @@ def main():
         #                       scoring='accuracy')
         # svm_rfe.fit(X_train, y_train)
         #
-        #
         # # Random Forest recursive feature selection
         # best_grid_model = RandomForestClassifier(n_estimators=100,
         #                 min_samples_split=3, min_samples_leaf=3,
@@ -317,14 +323,58 @@ def main():
         #
         # ################### End Test Model with 8 features ##################
 
-
-
-
-
-
-
-
-
+        # #################### ROC-AUC Curve #############################
+        #
+        # # fit svm
+        # svm = SVC(C=1, gamma=0.3, kernel='rbf', probability=True)
+        # svm.fit(X_train, y_train)
+        #
+        # # fit random forest
+        # rf_model = RandomForestClassifier(n_estimators=200,
+        #                 min_samples_split=3, min_samples_leaf=3,
+        #                 max_features='sqrt', max_depth=1200,
+        #                 bootstrap=True, random_state=0)
+        # rf_model.fit(X_train, y_train)
+        #
+        # # fit logistic model
+        # logreg = LogisticRegression()
+        # logreg.fit(X_train, y_train)
+        #
+        # # fit baseline decision tree
+        # dt = DecisionTreeClassifier()
+        # dt.fit(X_train, y_train)
+        #
+        # plt.figure()
+        # # ROC for random forest
+        # rf_roc_auc = roc_auc_score(y_test, rf_model.predict(X_test))
+        # fpr, tpr, thresholds = roc_curve(y_test, rf_model.predict_proba(X_test)[:,1])
+        # plt.plot(fpr, tpr, label='Random Forest (AUC = %0.2f)' % rf_roc_auc)
+        #
+        # # ROC for SVM
+        # svm_roc_auc = roc_auc_score(y_test, svm.predict(X_test))
+        # fpr, tpr, thresholds = roc_curve(y_test, svm.predict_proba(X_test)[:,1])
+        # plt.plot(fpr, tpr, label='SVM (AUC = %0.2f)' % svm_roc_auc)
+        #
+        # # ROC for Logistic Regression
+        # logit_roc_auc = roc_auc_score(y_test, logreg.predict(X_test))
+        # fpr, tpr, thresholds = roc_curve(y_test, logreg.predict_proba(X_test)[:,1])
+        # plt.plot(fpr, tpr, label='Logistic Regression (AUC = %0.2f)' % logit_roc_auc)
+        #
+        # # ROC for DT
+        # dt_roc_auc = roc_auc_score(y_test, dt.predict(X_test))
+        # fpr, tpr, thresholds = roc_curve(y_test, dt.predict_proba(X_test)[:,1])
+        # plt.plot(fpr, tpr, label='Baseline Decision Tree (AUC = %0.2f)' % dt_roc_auc)
+        #
+        # plt.plot([0, 1], [0, 1],'r--')
+        # plt.xlim([0.0, 1.0])
+        # plt.ylim([0.0, 1.05])
+        # plt.xlabel('False Positive Rate')
+        # plt.ylabel('True Positive Rate')
+        # plt.title('Receiver Operating Characteristic')
+        # plt.legend(loc="lower right")
+        # plt.show()
+        #
+        # ################## END ROC-AUC Curve ###################################
 
 
 
