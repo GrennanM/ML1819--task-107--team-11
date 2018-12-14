@@ -120,10 +120,10 @@ def main():
    'year', 'month', 'link_hue', 'link_vue', 'link_sat',
    'sidebar_hue', 'sidebar_sat', 'sidebar_vue']
 
-  scaler = preprocessing.StandardScaler()
+  scaler = preprocessing.MinMaxScaler()
   data[numericVariables] = scaler.fit_transform(data[numericVariables])
 
-  data.to_csv('cleanData2.csv')
+  data.to_csv('cleanData.csv')
   data.info()
   print (data.head(5))
 
