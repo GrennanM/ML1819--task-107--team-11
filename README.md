@@ -1,2 +1,2 @@
 # twitter
-A machine learning project to investigate how well user's features on twitter can predict their gender.
+A machine learning project to create a language-independent model that can predict a user's gender on twitter
